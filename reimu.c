@@ -50,6 +50,16 @@ void __attribute__((format(printf, 2, 3))) reimu_cancel(int num, const char *fmt
     exit(num);
 }
 
+int __attribute__((format(printf, 3, 4))) reimu_cond_cancel(int cancel, int num, const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
+    va_end(ap);
+    if(cancel) exit(num);
+    return num;
+}
+
 void __attribute__((format(printf, 2, 3))) reimu_message(FILE *stream, const char *fmt, ...)
 {
     va_list ap;
@@ -187,28 +197,30 @@ int reimu_recurse_mkdir(char *path)
     return 0;
 }
 
-void __attribute__((format(printf, 1, 2))) reimu_textfile_write(const char *fmt, ...)
+int __attribute__((format(printf, 2, 3))) reimu_textfile_write(int cancel_on_error, const char *fmt, ...)
 {
-    if (!reimu_textfile) reimu_cancel(50, "Error while writing text file: File isn't opened\n");
+    if (!reimu_textfile) return reimu_cond_cancel(cancel_on_error, 50, "Error while writing text file: File isn't opened\n");
     va_list ap;
     va_start(ap, fmt);
     int rv = vfprintf(reimu_textfile, fmt, ap);
     va_end(ap);
-    if (rv < 0) reimu_cancel(51, "Error while writing text file: vfprintf() returned %d\n", rv);
+    if (rv < 0) return reimu_cond_cancel(cancel_on_error, 51, "Error while writing text file: vfprintf() returned %d\n", rv);
+    return 0;
 }
 
 char *reimu_textfile_buf = NULL;
 
-void reimu_textfile_buf_alloc(void)
+int reimu_textfile_buf_alloc()
 {
-    if ((reimu_textfile_buf = realloc(reimu_textfile_buf, 2)) == NULL) reimu_cancel(94, "Out of memory\n");
+    if ((reimu_textfile_buf = realloc(reimu_textfile_buf, 2)) == NULL) return -ENOMEM;
     strcpy(reimu_textfile_buf,"");
+    return 0;
 }
 
 int reimu_textfile_buf_commit(const char *name)
 {
     int rv = reimu_writefile(name, reimu_textfile_buf, strlen(reimu_textfile_buf));
-    reimu_textfile_buf_alloc();
+    if(!rv) rv = reimu_textfile_buf_alloc();
     return rv;
 }
 
@@ -219,7 +231,7 @@ int __attribute__((format(printf, 1, 2))) reimu_textfile_buf_append(const char *
     va_start (ap, fmt);
     vsnprintf (str, 1023, fmt, ap);
     va_end (ap);
-    if ((reimu_textfile_buf = realloc(reimu_textfile_buf, strlen(reimu_textfile_buf) + strlen(str) + 1)) == NULL) reimu_cancel(93, "Out of memory\n");
+    if ((reimu_textfile_buf = realloc(reimu_textfile_buf, strlen(reimu_textfile_buf) + strlen(str) + 1)) == NULL) return -ENOMEM;
     strcat(reimu_textfile_buf, str);
 }
 
