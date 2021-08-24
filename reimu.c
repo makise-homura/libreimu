@@ -233,6 +233,7 @@ int __attribute__((format(printf, 1, 2))) reimu_textfile_buf_append(const char *
     va_end (ap);
     if ((reimu_textfile_buf = realloc(reimu_textfile_buf, strlen(reimu_textfile_buf) + strlen(str) + 1)) == NULL) return -ENOMEM;
     strcat(reimu_textfile_buf, str);
+    return 0;
 }
 
 int reimu_get_conf_bool(const char *confbuf, int conflen, const char *needle)
