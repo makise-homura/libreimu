@@ -38,7 +38,7 @@ static int reimu_init_dbus(const char *service, const char *object, const char *
     if ((reimu_dbus_conn = dbus_bus_get(DBUS_BUS_SYSTEM, &reimu_dbus_error)) == NULL) return -1;
 
     reimu_dbus_msg_fini();
-    return (reimu_dbus_msg = dbus_message_new_method_call(service, object, "org.freedesktop.DBus.Properties", "Set")) == NULL;
+    return (reimu_dbus_msg = dbus_message_new_method_call(service, object, interface, method)) == NULL;
 }
 
 static int reimu_init_dbus_request(const char *string1, const char *string2)
