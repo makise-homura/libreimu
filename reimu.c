@@ -16,10 +16,13 @@ int reimu_is_in_dict(const char *dict[], const char *name)
     return 0;
 }
 
-void reimu_set_atexit(int already_done, void (*func)(void))
+void reimu_set_atexit(int *already_done, void (*func)(void))
 {
-    if (already_done) return;
-    already_done = 1;
+    if(already_done != NULL)
+    {
+        if (*already_done) return;
+        *already_done = 1;
+    }
     atexit(func);
 }
 
@@ -34,7 +37,7 @@ void reimu_textfile_close(void)
 
 int reimu_textfile_create(const char *name)
 {
-    reimu_set_atexit(reimu_is_atexit_textfile_close, reimu_textfile_close);
+    reimu_set_atexit(&reimu_is_atexit_textfile_close, reimu_textfile_close);
 
     if (reimu_textfile != NULL) return 1;
     reimu_textfile = fopen(name, "w");

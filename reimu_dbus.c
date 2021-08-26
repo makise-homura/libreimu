@@ -29,9 +29,9 @@ static void reimu_dbus_reply_fini(void)
 DBusError reimu_dbus_error;
 static int reimu_init_dbus(const char *service, const char *object, const char *interface, const char *method)
 {
-    reimu_set_atexit(reimu_is_atexit_dbus_fini, reimu_dbus_fini);
-    reimu_set_atexit(reimu_is_atexit_dbus_msg_fini, reimu_dbus_msg_fini);
-    reimu_set_atexit(reimu_is_atexit_dbus_reply_fini, reimu_dbus_reply_fini);
+    reimu_set_atexit(&reimu_is_atexit_dbus_fini, reimu_dbus_fini);
+    reimu_set_atexit(&reimu_is_atexit_dbus_msg_fini, reimu_dbus_msg_fini);
+    reimu_set_atexit(&reimu_is_atexit_dbus_reply_fini, reimu_dbus_reply_fini);
 
     reimu_dbus_fini();
     dbus_error_init(&reimu_dbus_error);

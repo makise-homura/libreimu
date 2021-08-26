@@ -13,7 +13,7 @@ long reimu_get_conf_long(const char *confbuf, int conflen, const char *needle);
 void __attribute__((format(printf, 2, 3))) reimu_cancel(int num, const char *fmt, ...);
 int __attribute__((format(printf, 3, 4))) reimu_cond_cancel(int cancel, int num, const char *fmt, ...);
 void __attribute__((format(printf, 2, 3))) reimu_message(FILE *stream, const char *fmt, ...);
-void reimu_set_atexit(int already_done, void (*func)(void));
+void reimu_set_atexit(int *already_done, void (*func)(void));
 
 /* reimu_time */
 

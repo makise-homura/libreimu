@@ -14,7 +14,7 @@ int reimu_gpiochip_init(void)
 {
     if (reimu_gpiochip) return 0;
     reimu_gpiochip = gpiod_chip_open("/dev/gpiochip0");
-    reimu_set_atexit(reimu_is_atexit_gpiochip_fini, reimu_gpiochip_fini);
+    reimu_set_atexit(&reimu_is_atexit_gpiochip_fini, reimu_gpiochip_fini);
     if (reimu_gpiochip) return 0;
     return 1;
 }
@@ -67,7 +67,7 @@ int reimu_gpioconfig_init(void)
 {
     if (reimu_gpioconfig) return 0;
     int rv = reimu_readfile("/etc/gpiotab", &reimu_gpioconfig, &reimu_gpioconfig_len);
-    if (!rv) reimu_set_atexit(reimu_is_atexit_gpioconfig_fini, reimu_gpioconfig_fini);
+    if (!rv) reimu_set_atexit(&reimu_is_atexit_gpioconfig_fini, reimu_gpioconfig_fini);
     return rv;
 }
 

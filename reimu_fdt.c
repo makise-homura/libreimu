@@ -66,7 +66,7 @@ static int reimu_open_dtb(void)
 {
     size_t dtb_size;
     if (reimu_readfile(reimu_devtree_path, &reimu_dtb, &dtb_size)) return 1;
-    reimu_set_atexit(reimu_is_atexit_free_dtb, reimu_free_dtb);
+    reimu_set_atexit(&reimu_is_atexit_free_dtb, reimu_free_dtb);
     return 0;
 }
 
