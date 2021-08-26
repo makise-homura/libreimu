@@ -64,13 +64,13 @@ int reimu_for_each_subnode(int cancel_on_error, int parent, traverse_callback_t 
 
 static int reimu_open_dtb(void)
 {
-    long dtb_size;
+    size_t dtb_size;
     if (reimu_readfile(reimu_devtree_path, &reimu_dtb, &dtb_size)) return 1;
     reimu_set_atexit(reimu_is_atexit_free_dtb, reimu_free_dtb);
     return 0;
 }
 
-int reimu_traverse_node(int cancel_on_error, int node, const char *nodename, traverse_callback_t callback, const void *data, int bus)
+static int reimu_traverse_node(int cancel_on_error, int node, const char *nodename __attribute__((unused)), traverse_callback_t callback, const void *data, int bus)
 {
     const char *pcompatible = reimu_getprop(cancel_on_error, node, "compatible", 1, 11, "Error reading compatible value from node 0x%08x:", node);
     if (pcompatible == NULL) return -1;

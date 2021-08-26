@@ -56,7 +56,7 @@ int reimu_set_gpio(int num, int value, int delay)
 
 int reimu_is_atexit_gpioconfig_fini = 0;
 char *reimu_gpioconfig = NULL;
-long reimu_gpioconfig_len = 0;
+size_t reimu_gpioconfig_len = 0;
 void reimu_gpioconfig_fini(void)
 {
     if (reimu_gpioconfig) free(reimu_gpioconfig);
@@ -74,7 +74,7 @@ int reimu_gpioconfig_init(void)
 char *reimu_find_gpioconfig(const char *needle)
 {
     int ndlen = strlen(needle);
-    for(char *pos = reimu_gpioconfig; (pos - reimu_gpioconfig) <= reimu_gpioconfig_len - (ndlen + 3); ++pos)
+    for(char *pos = reimu_gpioconfig; (size_t)(pos - reimu_gpioconfig) <= (reimu_gpioconfig_len - (ndlen + 3)); ++pos)
     {
         if (!strncmp(pos, needle, ndlen) && *(pos + ndlen) == '=')
         {

@@ -92,14 +92,14 @@ void reimu_msleep(long value, volatile int *exit_request)
     }
 }
 
-int reimu_readfile(const char *name, char **p_buf, long *p_size)
+int reimu_readfile(const char *name, char **p_buf, size_t *p_size)
 {
     if(p_buf == NULL) return 8;
 
     FILE *f = fopen(name, "r");
     if (f == NULL) return 2;
 
-    long size = 4096;
+    size_t size = 4096;
     if(p_size != NULL)
     {
         if (fseek(f, 0L, SEEK_END)) { fclose(f); return 3; }
@@ -117,7 +117,7 @@ int reimu_readfile(const char *name, char **p_buf, long *p_size)
     return 0;
 }
 
-int reimu_writefile(const char *name, const void *buf, long size)
+int reimu_writefile(const char *name, const void *buf, size_t size)
 {
     if(buf == NULL) return 8;
 
@@ -133,11 +133,11 @@ int reimu_writefile(const char *name, const void *buf, long size)
 int reimu_find_in_file(const char *name, const char *needle)
 {
     char *filedata = NULL;
-    long filelength = 0;
+    size_t filelength = 0;
     if(reimu_readfile(name, &filedata, &filelength)) return -2;
 
     int rv = -1;
-    for(char *pos = filedata; (pos - filedata) <= filelength - strlen(needle); ++pos)
+    for(char *pos = filedata; (size_t)(pos - filedata) <= (filelength - strlen(needle)); ++pos)
     {
         if (!strncmp(pos, needle, strlen(needle))) { rv = 0; break; }
     }
