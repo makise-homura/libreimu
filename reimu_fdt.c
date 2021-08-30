@@ -35,10 +35,13 @@ const void* __attribute__((format(printf, 6, 7))) reimu_getprop(enum cancel_type
         }
         else
         {
-            va_list ap;
-            va_start(ap, fmt);
-            vfprintf(stderr, fmt, ap);
-            va_end(ap);
+            if (cancel_on_error != BE_SILENT)
+            {
+                va_list ap;
+                va_start(ap, fmt);
+                vfprintf(stderr, fmt, ap);
+                va_end(ap);
+            }
             reimu_cond_cancel(cancel_on_error, failval, " %s\n", fdt_strerror(err));
             return NULL;
         }
