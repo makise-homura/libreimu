@@ -6,6 +6,7 @@
 #include <time.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include "reimu.h"
 
 int reimu_is_in_dict(const char *dict[], const char *name)
 {
@@ -53,13 +54,16 @@ void __attribute__((format(printf, 2, 3))) reimu_cancel(int num, const char *fmt
     exit(num);
 }
 
-int __attribute__((format(printf, 3, 4))) reimu_cond_cancel(int cancel, int num, const char *fmt, ...)
+int __attribute__((format(printf, 3, 4))) reimu_cond_cancel(enum cancel_type_t cancel, int num, const char *fmt, ...)
 {
-    va_list ap;
-    va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
-    va_end(ap);
-    if(cancel) exit(num);
+    if(cancel != BE_SILENT)
+    {
+        va_list ap;
+        va_start(ap, fmt);
+        vfprintf(stderr, fmt, ap);
+        va_end(ap);
+    }
+    if(cancel == CANCEL_ON_ERROR) exit(num);
     return num;
 }
 
@@ -200,7 +204,7 @@ int reimu_recurse_mkdir(char *path)
     return 0;
 }
 
-int __attribute__((format(printf, 2, 3))) reimu_textfile_write(int cancel_on_error, const char *fmt, ...)
+int __attribute__((format(printf, 2, 3))) reimu_textfile_write(enum cancel_type_t cancel_on_error, const char *fmt, ...)
 {
     if (!reimu_textfile) return reimu_cond_cancel(cancel_on_error, 50, "Error while writing text file: File isn't opened\n");
     va_list ap;

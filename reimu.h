@@ -10,8 +10,9 @@ long reimu_get_conf_long(const char *confbuf, int conflen, const char *needle);
 /* reimu_control */
 
 #include <stdio.h>
+enum cancel_type_t { JUST_PRINT_ERROR = 0, CANCEL_ON_ERROR = 1, BE_SILENT = 2 };
 void __attribute__((format(printf, 2, 3))) reimu_cancel(int num, const char *fmt, ...);
-int __attribute__((format(printf, 3, 4))) reimu_cond_cancel(int cancel, int num, const char *fmt, ...);
+int __attribute__((format(printf, 3, 4))) reimu_cond_cancel(enum cancel_type_t cancel, int num, const char *fmt, ...);
 void __attribute__((format(printf, 2, 3))) reimu_message(FILE *stream, const char *fmt, ...);
 void reimu_set_atexit(int *already_done, void (*func)(void));
 
@@ -36,7 +37,7 @@ int reimu_find_in_file(const char *name, const char *needle);
 /* reimu_textfile */
 
 int reimu_textfile_create(const char *name);
-int __attribute__((format(printf, 2, 3))) reimu_textfile_write(int cancel_on_error, const char *fmt, ...);
+int __attribute__((format(printf, 2, 3))) reimu_textfile_write(enum cancel_type_t cancel_on_error, const char *fmt, ...);
 void reimu_textfile_close(void);
 
 /* reimu_textfile_buf */
@@ -52,11 +53,11 @@ int reimu_set_gpio_by_name(const char *name, int val, int delay);
 
 /* reimu_fdt (requires libfdt) */
 
-typedef int (*traverse_callback_t)(int, const char *, int, int, int, const char *, const void *);
-const void* __attribute__((format(printf, 6, 7))) reimu_getprop(int cancel_on_error, int node, const char *name, int mandatory, int failval, const char *fmt, ...);
+typedef int (*traverse_callback_t)(enum cancel_type_t, const char *, int, int, int, const char *, const void *);
+const void* __attribute__((format(printf, 6, 7))) reimu_getprop(enum cancel_type_t cancel_on_error, int node, const char *name, int mandatory, int failval, const char *fmt, ...);
 int reimu_is_prop_empty(const char *prop);
-int reimu_for_each_subnode(int cancel_on_error, int parent, traverse_callback_t callback, const void *data, int bus, int (*function)(int cancel_on_error, int node, const char *nodename, traverse_callback_t callback, const void *data, int bus));
-int reimu_traverse_all_i2c(const void *data, traverse_callback_t function, int cancel_on_error);
+int reimu_for_each_subnode(enum cancel_type_t cancel_on_error, int parent, traverse_callback_t callback, const void *data, int bus, int (*function)(enum cancel_type_t cancel_on_error, int node, const char *nodename, traverse_callback_t callback, const void *data, int bus));
+int reimu_traverse_all_i2c(const void *data, traverse_callback_t function, enum cancel_type_t cancel_on_error);
 
 /* reimu_dbus (requires libdbus-1) */
 

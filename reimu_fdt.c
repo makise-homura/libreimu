@@ -23,7 +23,7 @@ static void reimu_free_dtb(void)
     free(reimu_dtb);
 }
 
-const void* __attribute__((format(printf, 6, 7))) reimu_getprop(int cancel_on_error, int node, const char *name, int mandatory, int failval, const char *fmt, ...)
+const void* __attribute__((format(printf, 6, 7))) reimu_getprop(enum cancel_type_t cancel_on_error, int node, const char *name, int mandatory, int failval, const char *fmt, ...)
 {
     int err;
     const void *ptr = fdt_getprop(reimu_dtb, node, name, &err);
@@ -46,7 +46,7 @@ const void* __attribute__((format(printf, 6, 7))) reimu_getprop(int cancel_on_er
     return ptr;
 }
 
-int reimu_for_each_subnode(int cancel_on_error, int parent, traverse_callback_t callback, const void *data, int bus, int (*function)(int cancel_on_error, int node, const char *nodename, traverse_callback_t callback, const void *data, int bus))
+int reimu_for_each_subnode(enum cancel_type_t cancel_on_error, int parent, traverse_callback_t callback, const void *data, int bus, int (*function)(enum cancel_type_t cancel_on_error, int node, const char *nodename, traverse_callback_t callback, const void *data, int bus))
 {
     int node;
     fdt_for_each_subnode(node, reimu_dtb, parent)
@@ -70,7 +70,7 @@ static int reimu_open_dtb(void)
     return 0;
 }
 
-static int reimu_traverse_node(int cancel_on_error, int node, const char *nodename __attribute__((unused)), traverse_callback_t callback, const void *data, int bus)
+static int reimu_traverse_node(enum cancel_type_t cancel_on_error, int node, const char *nodename __attribute__((unused)), traverse_callback_t callback, const void *data, int bus)
 {
     const char *pcompatible = reimu_getprop(cancel_on_error, node, "compatible", 1, 11, "Error reading compatible value from node 0x%08x:", node);
     if (pcompatible == NULL) return -1;
@@ -86,12 +86,12 @@ static int reimu_traverse_node(int cancel_on_error, int node, const char *nodena
     return callback(cancel_on_error, pcompatible, node, bus, reg, label, data);
 }
 
-static int reimu_i2c_traverse(int cancel_on_error, int bus, int offset, const void *data, traverse_callback_t callback)
+static int reimu_i2c_traverse(enum cancel_type_t cancel_on_error, int bus, int offset, const void *data, traverse_callback_t callback)
 {
     return reimu_for_each_subnode(cancel_on_error, offset, callback, data, bus, reimu_traverse_node);
 }
 
-int reimu_traverse_all_i2c(const void *data, traverse_callback_t callback, int cancel_on_error)
+int reimu_traverse_all_i2c(const void *data, traverse_callback_t callback, enum cancel_type_t cancel_on_error)
 {
     if (reimu_open_dtb()) return reimu_cond_cancel(cancel_on_error, 1, "Can't read device tree file\n");
 
