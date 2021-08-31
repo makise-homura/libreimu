@@ -124,6 +124,24 @@ int reimu_readfile(const char *name, char **p_buf, size_t *p_size)
     return 0;
 }
 
+int reimu_appendfile(const char *name, char **p_buf, size_t *p_size)
+{
+    if((p_size == NULL) || (p_buf == NULL)) return 9;
+
+    char *p_newbuf;
+    size_t p_newsize;
+    int rv = reimu_readfile(name, &p_newbuf, &p_newsize);
+    if(rv) return rv;
+
+    p_newsize += *p_size;
+    char *p_result = realloc(p_buf, p_newsize);
+    if (p_result == NULL) return 10;
+
+    *p_buf = p_result;
+    *p_size = p_newsize;
+    return 0;
+}
+
 int reimu_writefile(const char *name, const void *buf, size_t size)
 {
     if(buf == NULL) return 8;

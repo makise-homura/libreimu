@@ -31,6 +31,7 @@ int reimu_recurse_mkdir(char *path);
 /* reimu_file */
 
 int reimu_readfile(const char *name, char **p_buf, size_t *p_size);
+int reimu_appendfile(const char *name, char **p_buf, size_t *p_size);
 int reimu_writefile(const char *name, const void *buf, size_t size);
 int reimu_find_in_file(const char *name, const char *needle);
 
