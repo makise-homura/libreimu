@@ -133,12 +133,13 @@ int reimu_appendfile(const char *name, char **p_buf, size_t *p_size)
     int rv = reimu_readfile(name, &p_newbuf, &p_newsize);
     if(rv) return rv;
 
-    p_newsize += *p_size;
-    char *p_result = realloc(p_buf, p_newsize);
+    char *p_result = realloc(*p_buf, p_newsize + *p_size);
     if (p_result == NULL) return 10;
 
+    memcpy(p_result + *p_size, p_newbuf, p_newsize);
+    free(p_newbuf);
     *p_buf = p_result;
-    *p_size = p_newsize;
+    *p_size += p_newsize;
     return 0;
 }
 
