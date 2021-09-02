@@ -71,14 +71,17 @@ int reimu_gpioconfig_init(void)
     reimu_set_atexit(&reimu_is_atexit_gpioconfig_fini, reimu_gpioconfig_fini);
 
     int model = 0;
-    if (!reimu_find_in_file("/sys/devices/soc0/family", "AST2400")) model = 2400;
-    if (!reimu_find_in_file("/sys/devices/soc0/family", "AST2500")) model = 2500;
-    if (!reimu_find_in_file("/sys/devices/soc0/family", "AST2600")) model = 2600;
-    if (!model) return -200;
+    if (!reimu_compare_file("/sys/devices/soc0/family", "AST2400")) model = 2400;
+    if (!reimu_compare_file("/sys/devices/soc0/family", "AST2500")) model = 2500;
+    if (!reimu_compare_file("/sys/devices/soc0/family", "AST2600")) model = 2600;
+    if (!model) { reimu_gpioconfig_fini(); return -200; }
 
     char arch_filename[32];
     snprintf(arch_filename, 31, "/etc/gpiotab.%d", model);
-    return reimu_appendfile(arch_filename, &reimu_gpioconfig, &reimu_gpioconfig_len);
+    rv = reimu_appendfile(arch_filename, &reimu_gpioconfig, &reimu_gpioconfig_len);
+    if (rv) reimu_gpioconfig_fini();
+    return rv;
+
 }
 
 char *reimu_find_gpioconfig(const char *needle)
