@@ -174,7 +174,7 @@ int reimu_compare_file(const char *name, const char *needle)
 {
     char *filedata = NULL;
     if(reimu_readfile(name, &filedata, NULL)) return -2;
-    int rv = (strncmp(filedata, needle, strlen(needle))) ? 1 : 0);
+    int rv = (strncmp(filedata, needle, strlen(needle)) ? 1 : 0);
     free(filedata);
     return rv;
 }
